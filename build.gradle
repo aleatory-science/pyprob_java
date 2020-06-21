@@ -1,0 +1,31 @@
+import io.netifi.flatbuffers.plugin.tasks.FlatBuffers
+
+plugins {
+    id 'java'
+    id "io.netifi.flatbuffers" version "1.0.6"
+}
+
+group 'com.github.ahmadsalim'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://raw.github.com/idsc-frazzoli/tensor/mvn-repo/' }
+}
+
+flatbuffers {
+    flatcPath = 'flatc'
+    language = 'java'
+}
+
+task createFlatBuffers(type: FlatBuffers) {
+    inputDir = file("src/main/ppx")
+    outputDir = file("src/main/java")
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'org.zeromq:jeromq:0.5.2'
+    implementation 'ch.ethz.idsc:tensor:0.8.1'
+    implementation 'com.google.flatbuffers:flatbuffers-java:1.12.0'
+}

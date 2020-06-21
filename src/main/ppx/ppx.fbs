@@ -1,0 +1,144 @@
+// ppx
+// 0.1.5
+//
+// Probabilistic programming execution protocol
+// https://github.com/pyprob/ppx
+//
+namespace ppx;
+
+union MessageBody {
+  Handshake,
+  HandshakeResult,
+  Run,
+  RunResult,
+  Sample,
+  SampleResult,
+  Observe,
+  ObserveResult,
+  Tag,
+  TagResult,
+  Reset
+}
+
+table Message {
+  body: MessageBody;
+}
+
+table Tensor {
+  data: [double];
+  shape: [int];
+}
+
+union Distribution {
+  Normal,
+  Uniform,
+  Categorical,
+  Poisson,
+  Bernoulli,
+  Beta,
+  Exponential,
+  Gamma,
+  LogNormal,
+  Binomial,
+  Weibull
+}
+
+table Handshake {
+  system_name: string;
+}
+
+table HandshakeResult {
+  system_name: string;
+  model_name: string;
+}
+
+table Run {}
+
+table RunResult {
+  result: Tensor;
+}
+
+table Sample {
+  address: string;
+  name: string;
+  distribution: Distribution;
+  control: bool = true;
+  replace: bool = false;
+}
+
+table SampleResult {
+  result: Tensor;
+}
+
+table Observe {
+  address: string;
+  name: string;
+  distribution: Distribution;
+  value: Tensor;
+}
+
+table ObserveResult {}
+
+table Tag {
+  address: string;
+  name: string;
+  value: Tensor;
+}
+
+table TagResult {}
+
+table Reset {}
+
+table Normal {
+  mean: Tensor;
+  stddev: Tensor;
+}
+
+table Uniform {
+  low: Tensor;
+  high: Tensor;
+}
+
+table Categorical {
+  probs: Tensor;
+}
+
+table Poisson {
+  rate: Tensor;
+}
+
+table Bernoulli {
+  probs: Tensor;
+}
+
+table Beta {
+  concentration1: Tensor;
+  concentration0: Tensor;
+}
+
+table Exponential {
+  rate: Tensor;
+}
+
+table Gamma {
+  concentration: Tensor;
+  rate: Tensor;
+}
+
+table LogNormal {
+  loc: Tensor;
+  scale: Tensor;
+}
+
+table Binomial {
+  total_count: Tensor;
+  probs: Tensor;
+}
+
+table Weibull {
+  scale: Tensor;
+  concentration: Tensor;
+}
+
+root_type Message;
+file_identifier "PPXF";
