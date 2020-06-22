@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ppx.*;
 import pyprob.distributions.Distribution;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -59,9 +60,9 @@ public abstract class Model {
         this.defaultReplace = defaultReplace;
     }
 
-    abstract Tensor call();
+    abstract Tensor call() throws IOException;
 
-    public void run(String serverAddress) throws InterruptedException {
+    public void run(String serverAddress) throws InterruptedException, IOException {
         if (this.isInterrupted) {
             throw new InterruptedException();
         }
@@ -77,7 +78,9 @@ public abstract class Model {
                     runModel(numTraces);
                     break;
                 case MessageBody.Handshake:
-                    var systemName = ((Handshake) message.body(message)).systemName();
+                    Handshake handshake = new Handshake();
+                    assert message.body(handshake) != null;
+                    var systemName = handshake.systemName();
                     handshake(systemName);
                     break;
                 default:
@@ -102,39 +105,39 @@ public abstract class Model {
         return String.format("[%s]", String.join(",", nameList));
     }
 
-    public Tensor sample(Distribution dist) {
+    public <T> T sample(Distribution<T> dist) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, this.defaultControl,
                            this.defaultReplace, address, "");
     }
 
-    public Tensor sample(Distribution dist, String name) {
+    public <T> T sample(Distribution<T> dist, String name) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, this.defaultControl,
                            this.defaultReplace, address, name);
     }
 
-    public Tensor sample(Distribution dist, boolean control, boolean replace) {
+    public <T> T sample(Distribution<T> dist, boolean control, boolean replace) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, control, replace, address, "");
     }
 
-    public Tensor sample(Distribution dist, boolean control, boolean replace, String name) {
+    public <T> T sample(Distribution<T> dist, boolean control, boolean replace, String name) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, control, replace, address, name);
     }
 
-    public void observe(Distribution dist, Tensor value) {
+    public <T> void observe(Distribution<T> dist, T value) throws IOException {
         var address = this.extractAddress();
         dist.observe(this.messageHandler, value, address, "");
     }
 
-    public void observe(Distribution dist, String name) {
+    public <T> void observe(Distribution<T> dist, String name) throws IOException {
         var address = this.extractAddress();
         dist.observe(this.messageHandler, null, address, name);
     }
 
-    public void observe(Distribution dist, Tensor value, String name) {
+    public <T> void observe(Distribution<T> dist, T value, String name) throws IOException {
         var address = this.extractAddress();
         dist.observe(this.messageHandler, value, address, name);
     }
@@ -161,7 +164,7 @@ public abstract class Model {
         return value;
     }
 
-    private void runModel(int numTraces) {
+    private void runModel(int numTraces) throws IOException {
         logger.info("PPX (Java): Executed traces: {}\n", numTraces);
         var result = this.messageHandler.protocolTensor(this.call());
         var runResult = RunResult.createRunResult(this.messageHandler.getBuilder(),

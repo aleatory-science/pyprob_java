@@ -1,6 +1,5 @@
 package pyprob;
 
-import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
 import ch.ethz.idsc.tensor.Tensors;
@@ -15,17 +14,16 @@ import org.zeromq.ZMQ;
 import ppx.Message;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.stream.IntStream;
 
 public class MessageHandler implements Closeable {
-    private Logger logger =
+    private final Logger logger =
             LoggerFactory.getLogger(MessageHandler.class);
-    private ZContext context;
-    private ZMQ.Socket socket;
+    private final ZContext context;
+    private final ZMQ.Socket socket;
     private boolean isSocketConnected;
-    private FlatBufferBuilder builder;
+    private final FlatBufferBuilder builder;
 
     public MessageHandler() {
         context = new ZContext();
@@ -89,7 +87,7 @@ public class MessageHandler implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (context != null) context.close();
     }
 }
