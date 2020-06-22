@@ -5,6 +5,10 @@ import com.github.ahmadsalim.pyprob_java.BuildConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ppx.*;
+import pyprob.distributions.Distribution;
+
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 
 public abstract class Model {
@@ -14,7 +18,7 @@ public abstract class Model {
     private volatile boolean isInterrupted;
     private final Logger logger = LoggerFactory.getLogger(Model.class);
     private boolean defaultControl = true;
-    private boolean defaultReset = false;
+    private boolean defaultReplace = false;
 
     public Model(String name, MessageHandler messageHandler) {
         this.systemName = String.format("%s %s (%s:%s)",
@@ -47,12 +51,12 @@ public abstract class Model {
         this.defaultControl = defaultControl;
     }
 
-    public boolean isDefaultReset() {
-        return defaultReset;
+    public boolean isDefaultReplace() {
+        return defaultReplace;
     }
 
-    public void setDefaultReset(boolean defaultReset) {
-        this.defaultReset = defaultReset;
+    public void setDefaultReplace(boolean defaultReplace) {
+        this.defaultReplace = defaultReplace;
     }
 
     abstract Tensor call();
@@ -84,6 +88,77 @@ public abstract class Model {
         if (this.isInterrupted) {
             throw new InterruptedException();
         }
+    }
+
+    private String extractAddress() {
+        var walker = StackWalker.getInstance();
+        var nameList = walker.walk(stack ->
+                        stack.takeWhile(sf -> !sf.getMethodName().equals("call") &&
+                                       Model.class.isAssignableFrom(sf.getDeclaringClass()))
+                              .map(sf -> String.format("%s.%s", sf.getClassName(), sf.getMethodName()))
+                              .collect(Collectors.toList())
+                     );
+        Collections.reverse(nameList);
+        return String.format("[%s]", String.join(",", nameList));
+    }
+
+    public Tensor sample(Distribution dist) {
+        var address = this.extractAddress();
+        return dist.sample(this.messageHandler, this.defaultControl,
+                           this.defaultReplace, address, "");
+    }
+
+    public Tensor sample(Distribution dist, String name) {
+        var address = this.extractAddress();
+        return dist.sample(this.messageHandler, this.defaultControl,
+                           this.defaultReplace, address, name);
+    }
+
+    public Tensor sample(Distribution dist, boolean control, boolean replace) {
+        var address = this.extractAddress();
+        return dist.sample(this.messageHandler, control, replace, address, "");
+    }
+
+    public Tensor sample(Distribution dist, boolean control, boolean replace, String name) {
+        var address = this.extractAddress();
+        return dist.sample(this.messageHandler, control, replace, address, name);
+    }
+
+    public void observe(Distribution dist, Tensor value) {
+        var address = this.extractAddress();
+        dist.observe(this.messageHandler, value, address, "");
+    }
+
+    public void observe(Distribution dist, String name) {
+        var address = this.extractAddress();
+        dist.observe(this.messageHandler, null, address, name);
+    }
+
+    public void observe(Distribution dist, Tensor value, String name) {
+        var address = this.extractAddress();
+        dist.observe(this.messageHandler, value, address, name);
+    }
+
+    public Tensor tag(Tensor value) {
+        return this.tag(value, "");
+    }
+
+    public Tensor tag(Tensor value, String name) {
+        var address = this.extractAddress();
+        if (!this.messageHandler.isSocketConnected()) {
+            logger.warn("PPX (Java): Warning: Not connected for tagging\n.");
+            return value;
+        }
+        var builder = this.messageHandler.getBuilder();
+        var resAddress = builder.createString(address);
+        var resName = builder.createString(name);
+        var resTensor = this.messageHandler.protocolTensor(value);
+        var tag = Tag.createTag(builder, resAddress, resName, resTensor);
+        var message = Message.createMessage(builder, MessageBody.Tag, tag);
+        this.messageHandler.sendMessage(message);
+        var resMessage = this.messageHandler.receiveMessage();
+        logger.info("PPX (Java): Received message after tagging: {}", resMessage);
+        return value;
     }
 
     private void runModel(int numTraces) {
