@@ -60,7 +60,7 @@ public abstract class Model {
         this.defaultReplace = defaultReplace;
     }
 
-    abstract Tensor call() throws IOException;
+    public abstract Tensor call() throws IOException;
 
     public void run(String serverAddress) throws InterruptedException, IOException {
         if (this.isInterrupted) {
