@@ -34,7 +34,8 @@ public interface Distribution<T> {
         var resMessage = messageHandler.receiveMessage();
         if (resMessage.bodyType() == MessageBody.SampleResult) {
             var sampleResult = new SampleResult();
-            assert resMessage.body(sampleResult) != null;
+            var convres = resMessage.body(sampleResult);
+            assert convres != null;
             return this.convertSample(messageHandler.tensor(sampleResult.result()));
         }
         throw new IOException("PPX (Java): Unexpected result message");
@@ -57,7 +58,9 @@ public interface Distribution<T> {
         var resMessage = messageHandler.receiveMessage();
         if (resMessage.bodyType() == MessageBody.ObserveResult) {
             var observeResult = new ObserveResult();
-            assert resMessage.body(observeResult) != null;
+            var convres = resMessage.body(observeResult);
+            assert convres != null;
+            return;
         }
         throw new IOException("PPX (Java): Unexpected result message");
     }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import static java.lang.StackWalker.Option.RETAIN_CLASS_REFERENCE;
 
 public abstract class Model {
     private final String systemName;
@@ -79,7 +80,8 @@ public abstract class Model {
                     break;
                 case MessageBody.Handshake:
                     Handshake handshake = new Handshake();
-                    assert message.body(handshake) != null;
+                    var convres = message.body(handshake);
+                    assert convres != null;
                     var systemName = handshake.systemName();
                     handshake(systemName);
                     break;
@@ -94,15 +96,17 @@ public abstract class Model {
     }
 
     private String extractAddress() {
-        var walker = StackWalker.getInstance();
+        var walker = StackWalker.getInstance(RETAIN_CLASS_REFERENCE);
         var nameList = walker.walk(stack ->
-                        stack.takeWhile(sf -> !sf.getMethodName().equals("call") &&
-                                       Model.class.isAssignableFrom(sf.getDeclaringClass()))
-                              .map(sf -> String.format("%s.%s", sf.getClassName(), sf.getMethodName()))
+                        stack.takeWhile(sf -> !(sf.getMethodName().equals("call") &&
+                                                Model.class.isAssignableFrom(sf.getDeclaringClass())))
+                              .skip(1)
+                              .map(sf -> String.format("%s_%s", sf.getClassName(), sf.getMethodName()))
+                              .map(st -> st.replace(".", "__"))
                               .collect(Collectors.toList())
                      );
         Collections.reverse(nameList);
-        return String.format("[%s]", String.join(",", nameList));
+        return String.format("[%s]", String.join(";", nameList));
     }
 
     public <T> T sample(Distribution<T> dist) throws IOException {

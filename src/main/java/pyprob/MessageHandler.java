@@ -68,7 +68,13 @@ public class MessageHandler implements Closeable {
                              .map(protocolTensor::shape)
                              .boxed()
                              .toArray(Integer[]::new);
-        return ArrayReshape.of(Tensors.vectorDouble(data), shape);
+        var res = Tensors.vectorDouble(data);
+        if (shape.length > 0) {
+            return ArrayReshape.of(res, shape);
+        }
+        else {
+            return res;
+        }
     }
 
     public int protocolTensor(Tensor tensor) {
