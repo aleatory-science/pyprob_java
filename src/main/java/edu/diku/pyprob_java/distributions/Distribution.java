@@ -1,10 +1,10 @@
-package pyprob.distributions;
+package edu.diku.pyprob_java.distributions;
 
 import ch.ethz.idsc.tensor.Tensor;
 import ppx.MessageBody;
 import ppx.ObserveResult;
 import ppx.SampleResult;
-import pyprob.MessageHandler;
+import edu.diku.pyprob_java.MessageHandler;
 
 import java.io.IOException;
 

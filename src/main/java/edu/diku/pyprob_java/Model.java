@@ -1,11 +1,11 @@
-package pyprob;
+package edu.diku.pyprob_java;
 
 import ch.ethz.idsc.tensor.Tensor;
 import com.github.ahmadsalim.pyprob_java.BuildConfig;
+import edu.diku.pyprob_java.distributions.Distribution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ppx.*;
-import pyprob.distributions.Distribution;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -109,34 +109,34 @@ public abstract class Model {
         return String.format("[%s]", String.join(";", nameList));
     }
 
-    public <T> T sample(Distribution<T> dist) throws IOException {
+    public <T> T sample(edu.diku.pyprob_java.distributions.Distribution<T> dist) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, this.defaultControl,
                            this.defaultReplace, address, "");
     }
 
-    public <T> T sample(Distribution<T> dist, String name) throws IOException {
+    public <T> T sample(edu.diku.pyprob_java.distributions.Distribution<T> dist, String name) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, this.defaultControl,
                            this.defaultReplace, address, name);
     }
 
-    public <T> T sample(Distribution<T> dist, boolean control, boolean replace) throws IOException {
+    public <T> T sample(edu.diku.pyprob_java.distributions.Distribution<T> dist, boolean control, boolean replace) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, control, replace, address, "");
     }
 
-    public <T> T sample(Distribution<T> dist, boolean control, boolean replace, String name) throws IOException {
+    public <T> T sample(edu.diku.pyprob_java.distributions.Distribution<T> dist, boolean control, boolean replace, String name) throws IOException {
         var address = this.extractAddress();
         return dist.sample(this.messageHandler, control, replace, address, name);
     }
 
-    public <T> void observe(Distribution<T> dist, T value) throws IOException {
+    public <T> void observe(edu.diku.pyprob_java.distributions.Distribution<T> dist, T value) throws IOException {
         var address = this.extractAddress();
         dist.observe(this.messageHandler, value, address, "");
     }
 
-    public <T> void observe(Distribution<T> dist, String name) throws IOException {
+    public <T> void observe(edu.diku.pyprob_java.distributions.Distribution<T> dist, String name) throws IOException {
         var address = this.extractAddress();
         dist.observe(this.messageHandler, null, address, name);
     }

@@ -1,4 +1,4 @@
-package pyprob;
+package edu.diku.pyprob_java;
 
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;

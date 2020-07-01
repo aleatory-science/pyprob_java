@@ -1,10 +1,7 @@
-package pyprob.distributions;
+package edu.diku.pyprob_java.distributions;
 
 import ch.ethz.idsc.tensor.Tensor;
-import ppx.MessageBody;
-import pyprob.MessageHandler;
-
-import java.io.IOException;
+import edu.diku.pyprob_java.MessageHandler;
 
 public class Normal implements TensorDistribution {
     private Tensor mean;

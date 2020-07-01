@@ -1,8 +1,8 @@
-package pyprob.distributions;
+package edu.diku.pyprob_java.distributions;
 
 import ch.ethz.idsc.tensor.Tensor;
 import ppx.Distribution;
-import pyprob.MessageHandler;
+import edu.diku.pyprob_java.MessageHandler;
 
 public class Weibull implements TensorDistribution {
     private Tensor scale;

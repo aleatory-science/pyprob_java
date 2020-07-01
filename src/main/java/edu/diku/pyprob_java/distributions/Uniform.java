@@ -1,7 +1,7 @@
-package pyprob.distributions;
+package edu.diku.pyprob_java.distributions;
 
 import ch.ethz.idsc.tensor.Tensor;
-import pyprob.MessageHandler;
+import edu.diku.pyprob_java.MessageHandler;
 
 public class Uniform implements TensorDistribution {
     private Tensor low;

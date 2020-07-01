@@ -1,10 +1,10 @@
 import ch.ethz.idsc.tensor.DoubleScalar;
 import ch.ethz.idsc.tensor.Scalar;
 import ch.ethz.idsc.tensor.Tensor;
-import pyprob.MessageHandler;
-import pyprob.Model;
-import pyprob.distributions.Normal;
-import pyprob.distributions.Uniform;
+import edu.diku.pyprob_java.MessageHandler;
+import edu.diku.pyprob_java.Model;
+import edu.diku.pyprob_java.distributions.Normal;
+import edu.diku.pyprob_java.distributions.Uniform;
 
 import java.io.IOException;
 

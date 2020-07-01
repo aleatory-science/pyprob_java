@@ -1,13 +1,13 @@
-package pyprob.distributions;
+package edu.diku.pyprob_java.distributions;
 
 import ch.ethz.idsc.tensor.Tensor;
+import edu.diku.pyprob_java.MessageHandler;
 import ppx.Distribution;
-import pyprob.MessageHandler;
 
-public class Poisson implements IntegerDistribution {
+public class Exponential implements TensorDistribution {
     private Tensor rate;
 
-    public Poisson(Tensor rate) {
+    public Exponential(Tensor rate) {
         this.rate = rate;
     }
 
@@ -21,13 +21,13 @@ public class Poisson implements IntegerDistribution {
 
     @Override
     public byte fbDistType() {
-        return Distribution.Poisson;
+        return Distribution.Exponential;
     }
 
     @Override
     public int fbCreateDist(MessageHandler messageHandler) {
         var builder = messageHandler.getBuilder();
         var mRate = messageHandler.protocolTensor(this.rate);
-        return ppx.Poisson.createPoisson(builder, mRate);
+        return ppx.Exponential.createExponential(builder, mRate);
     }
 }
