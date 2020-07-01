@@ -14,7 +14,7 @@ Necessary build commands:
 * `gradle build` to compile the Java project.
 
 ### Basic usage
-We have ported the [Marsaglia Gaussian](https://github.com/pyprob/pyprob/blob/master/examples/gaussian_unknown_mean_marsaglia.ipynb) model to Java as an example usage.
+We have ported the [Marsaglia Gaussian](https://github.com/pyprob/pyprob/blob/master/examples/gaussian_unknown_mean_marsaglia.ipynb) model to Java as an example usage. The example model is available in [src/test/MarsagliaGaussian.java](https://github.com/aleatory-science/pyprob_java/blob/master/src/test/java/MarsagliaGaussian.java)
 The core idea is that one writes a model in Java by inheriting from the `edu.diku.pyprob_java.Model` and implementing
 the `call()` method which runs the computations in the model. Inside `call()` one can use `sample()` and
 `observe()` statements to respectively probabilistically sample and condition the model on data.
